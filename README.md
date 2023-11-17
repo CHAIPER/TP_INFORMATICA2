@@ -39,6 +39,7 @@ punteros a funciones.
 Codigo:
 
 Clase portcfg:
+
 #ifndef PORTCFG_H
 #define PORTCFG_H
 
