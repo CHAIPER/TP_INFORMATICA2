@@ -36,12 +36,7 @@ cola (xQueue).
 serie utilizando una máquina de estados finita implementada a través de un vector de
 punteros a funciones.
 
-
-
-
-
-
-
+Codigo:
 
 Clase portcfg:
 #ifndef PORTCFG_H
@@ -68,6 +63,8 @@ private:
 #endif // PORTCFG_H
 
 Incluimos la definición de la clase QDialog. Declaramos un “namespace” llamado Ui y una clase portCfg dentro de ese espacio; portCfg es una clase que hereda de QDialog. Luego Definimos un constructor (explicit portCfg(QWidget *parent = 0);) y un destructor (~portCfg();).
+
+
 Clase VentanaPrincipal:
 #ifndef VENTANAPRINCIPAL_H
 #define VENTANAPRINCIPAL_H
@@ -149,9 +146,6 @@ private:
 #endif // VENTANAPRINCIPAL_H
 
 
-
-
-
  
 La clase anterior es la encargada de controlar la comunicación serie. Incluimos las clases, bibliotecas necesarias y definimos las constantes de los headers. Declaramos un tipo enum llamado EstadoValues, que puede tomar lo distintos valores que indicamos. Definimos una unión para permitir el acceso al mismo bloque de memoria, esta puede ser interpretada como un unsigned short o como un array de dos uint8_t. Luego declaramos la estructura que contiene a shortVal y un uint8_t. Definimos la estructura Estado cuyos campos son las representaciones de los distintos cambios. Estos son prototipos de funciones y un tipo de puntero a función (fcnState) que apunta a funciones con un formato específico. Desarrollamos los prototipos de funciones de cambio de estado. Indicamos cual va a ser el constructor y el destructor.
 
@@ -213,6 +207,7 @@ ventanaPrincipal::~ventanaPrincipal() {
 }
 
 Primero tenemos el constructor y destructor; en el constructor inicializamos la interfaz de usuario (UI), configuramos el puerto serie, establecemos las conexiones de señales y slots. Por otro lado, en el destructor desconectamos las señales, cerramos el puerto serie en el caso de estar abierto y liberamos la memoria asociada.
+
 // Función para enviar datos
 void ventanaPrincipal::sendData() {
     if (puertoSerie->isOpen()) {
