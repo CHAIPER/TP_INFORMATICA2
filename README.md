@@ -172,7 +172,6 @@ int main(int argc, char *argv[])
 En la función `main`, se crea una instancia de la aplicación Qt (`QApplication`) y de la ventana principal (`ventanaPrincipal`). Se muestra la ventana principal en la interfaz gráfica.
 
 # Implementacion ESP32
-¡Por supuesto! Vamos a desglosar el código parte por parte:
 
 ### 1. Inclusión de Librerías y Definiciones:
 ```c
