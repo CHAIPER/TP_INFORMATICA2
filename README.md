@@ -171,3 +171,71 @@ int main(int argc, char *argv[])
 
 En la función `main`, se crea una instancia de la aplicación Qt (`QApplication`) y de la ventana principal (`ventanaPrincipal`). Se muestra la ventana principal en la interfaz gráfica.
 
+# Implementacion ESP32
+¡Por supuesto! Vamos a desglosar el código parte por parte:
+
+### 1. Inclusión de Librerías y Definiciones:
+```c
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/uart.h"
+#include <freertos/queue.h>
+#include "serial.h"
+#include <driver/gpio.h>
+```
+Esto incluye las bibliotecas necesarias para el desarrollo en el entorno ESP32, como FreeRTOS para el manejo de tareas y colas, funciones de UART, GPIO y una biblioteca personalizada llamada "serial.h".
+
+### 2. Definiciones de Constantes:
+```c
+#define pkg_h 0x0C
+#define ledPin GPIO_NUM_2
+```
+Aquí se definen constantes para el encabezado del paquete (`pkg_h`) y el pin del LED (`ledPin`).
+
+### 3. Inicialización de Hardware:
+```c
+void hardware_init(void)
+```
+Esta función configura el pin del LED como salida.
+
+### 4. Estructuras y Enumeraciones:
+Se definen estructuras y enumeraciones que representan el estado y las partes de datos del paquete.
+
+### 5. Funciones de Estado:
+```c
+bool EstadoHeader(Estado *s, unsigned char ValorNuevo);
+bool EstadoAlto(Estado *s, unsigned char ValorNuevo);
+bool EstadoBajo(Estado *s, unsigned char ValorNuevo);
+bool EstadoSumaComprobacion(Estado *s, unsigned char ValorNuevo);
+```
+Estas funciones implementan las acciones de cada estado de la máquina de estados finitos (FSM) utilizada para procesar los datos recibidos por UART.
+
+### 6. Función de Inicialización de PWM:
+```c
+void ProgramaPwm(double high, double low);
+```
+Esta función controla el LED mediante PWM.
+
+### 7. Tarea de Manejo del LED (`led_management_task`):
+```c
+void led_management_task(void *param)
+```
+Esta tarea maneja el LED basándose en los parámetros recibidos desde la cola.
+
+### 8. Tarea de Comunicación Serie (`serial_comm_task`):
+```c
+void serial_comm_task(void *param)
+```
+Esta tarea implementa una máquina de estados para procesar datos provenientes de UART. Coloca el estado en una cola cuando se completa un paquete válido.
+
+### 9. Función Principal (`app_main`):
+```c
+void app_main()
+```
+En la función principal, se inicializa la comunicación serie, el hardware, y se crean las tareas `led_management_task` y `serial_comm_task`.
+
+### 10. Máquina de Estados (`EstadoHeader`, `EstadoAlto`, `EstadoBajo`, `EstadoSumaComprobacion`):
+Estas funciones implementan la lógica de la máquina de estados finitos (FSM) utilizada para procesar los datos recibidos por UART. Determinan el estado actual y realizan transiciones basadas en los datos recibidos.
+
+En resumen, el código controla un LED mediante PWM y procesa datos de UART utilizando una máquina de estados finitos, enviando la información procesada a través de una cola para que una tarea la utilice. La implementación está estructurada utilizando el paradigma de programación por tareas y la lógica de máquinas de estados.
