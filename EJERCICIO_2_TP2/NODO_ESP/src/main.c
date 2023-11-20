@@ -33,9 +33,6 @@ void hardware_init(void)
             .intr_type = GPIO_INTR_DISABLE};
     ESP_ERROR_CHECK(gpio_config(&gpioLed));
     ESP_ERROR_CHECK(gpio_set_level(ledPin, 0));
-
-    //adc1_config_width(ADC_WIDTH_BIT_12);
-    //adc1_config_channel_atten(sensorPin, ADC_ATTEN_DB_11);
 }
 
 static esp_mqtt_client_handle_t actClient;
@@ -52,23 +49,25 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch ((esp_mqtt_event_id_t)event_id)
     {
     case MQTT_EVENT_CONNECTED:
-    ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-    actClient = client;
-    msg_id = esp_mqtt_client_subscribe(client, "/ej02/cmd", 1);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+        actClient = client;
 
-    char idTopicCmd[20];
-    snprintf(idTopicCmd, sizeof(idTopicCmd), "/ej02/%d/cmd", id);
-    msg_id = esp_mqtt_client_subscribe(client, idTopicCmd, 1);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        // Subscripciones a tópicos relevantes
+        msg_id = esp_mqtt_client_subscribe(client, "/ej02/cmd", 1);
+        ESP_LOGI(TAG, "Subscribe to /ej02/cmd, msg_id=%d", msg_id);
 
-    char idTopicSensor[20];
-    snprintf(idTopicSensor, sizeof(idTopicSensor), "/ej02/%d/sensor", id);
-    msg_id = esp_mqtt_client_subscribe(client, idTopicSensor, 1);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        char idTopicCmd[20];
+        snprintf(idTopicCmd, sizeof(idTopicCmd), "/ej02/%d/cmd", id);
+        msg_id = esp_mqtt_client_subscribe(client, idTopicCmd, 1);
+        ESP_LOGI(TAG, "Subscribe to %s, msg_id=%d", idTopicCmd, msg_id);
 
-    mqttOk = true;
-    break;
+        char idTopicSensor[20];
+        snprintf(idTopicSensor, sizeof(idTopicSensor), "/ej02/%d/sensor", id);
+        msg_id = esp_mqtt_client_subscribe(client, idTopicSensor, 1);
+        ESP_LOGI(TAG, "Subscribe to %s, msg_id=%d", idTopicSensor, msg_id);
+
+        mqttOk = true;
+        break;
 
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -96,7 +95,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
         if (strcmp(topic, "/ej02/cmd") == 0)
         {
-            if (strcmp(data, "getId") == 0)
+            if (strcmp(data, "getid") == 0)
             {
                 char idTopic[20];
                 snprintf(idTopic, sizeof(idTopic), "/ej02/%d/id", id);
@@ -106,18 +105,19 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         }
         else if (strstr(topic, "/ej02/") != NULL && strstr(topic, "/sensor") != NULL)
         {
-            // Process sensor data for the corresponding node
-            // Parse node ID from the topic
+            // Procesar datos del sensor para el nodo correspondiente
+            // Analizar el ID del nodo desde el tópico
             char *token = strtok(topic, "/");
             token = strtok(NULL, "/");
             int nodeId = atoi(token);
 
-            // TODO: Process sensor data for nodeId using 'data'
+            // TODO: Procesar datos del sensor para nodeId usando 'data'
+            
         }
         else if (strstr(topic, "/ej02/") != NULL && strstr(topic, "/cmd") != NULL)
         {
-            // Process command for the corresponding node
-            // Parse node ID from the topic
+            // Procesar comando para el nodo correspondiente
+            // Analizar el ID del nodo desde el tópico
             char *token = strtok(topic, "/");
             token = strtok(NULL, "/");
             int nodeId = atoi(token);
@@ -143,6 +143,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             ESP_LOGE(TAG, "Last errno string: %s", strerror(event->error_handle->esp_transport_sock_errno));
         }
         break;
+
     default:
         ESP_LOGI(TAG, "Other event id:%d", event->event_id);
         break;
